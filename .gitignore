@@ -1,0 +1,110 @@
+# ==========================================
+# Rails API
+# ==========================================
+
+# Ruby
+*.rbc
+/api/.bundle/
+/api/vendor/bundle/
+/api/.byebug_history
+/api/.ruby-gemset
+/api/.rvmrc
+
+# SQLite database files (keep schema.rb and seeds.rb)
+/api/db/*.sqlite3
+/api/db/*.sqlite3-*
+/api/db/*.sqlite3-journal
+
+# Rails logs and temporary files
+/api/log/*
+!/api/log/.keep
+/api/tmp/*
+!/api/tmp/.keep
+/api/spec/tmp/
+/api/coverage/
+/api/public/system/
+
+# Rails generated assets
+/api/public/packs/
+/api/public/packs-test/
+/api/public/assets/
+
+# Uploaded files and Active Storage local files
+/api/public/uploads/
+/api/storage/*
+!/api/storage/.keep
+
+# Rails secrets and credentials
+/api/config/master.key
+/api/config/credentials/*.key
+/api/config/initializers/secret_token.rb
+
+# Environment variables
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Test output
+/api/capybara-*.html
+/api/pickle-email-*.html
+/api/rerun.txt
+/api/*.orig
+
+# ==========================================
+# React UI (Vite + TypeScript)
+# ==========================================
+
+# Dependencies
+node_modules/
+
+# Package manager / tooling
+.pnp
+.pnp.js
+.yarn-integrity
+yarn-debug.log*
+yarn-error.log*
+npm-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Build output
+/ui/dist/
+/ui/dist-ssr/
+
+# Environment variables (keep examples)
+!.env.example
+!.env.*.example
+
+# TypeScript
+*.tsbuildinfo
+
+# Logs and test output
+*.log
+/ui/logs/
+/ui/coverage/
+/ui/stats.html
+
+# Linter cache
+/ui/.eslintcache
+
+# ==========================================
+# Docker
+# ==========================================
+
+# Local overrides
+docker-compose.override.yml
+
+# ==========================================
+# Editor and operating system
+# ==========================================
+
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

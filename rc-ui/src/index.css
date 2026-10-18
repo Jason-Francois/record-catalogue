@@ -1,0 +1,15 @@
+@import "tailwindcss";
+@import "./theme.css";
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-page text-fg antialiased;
+  }
+}
+
+#root {
+  @apply flex min-h-screen flex-col;
+}

@@ -1,0 +1,66 @@
+/*
+  Palettes are chosen with data-palette on <html> ("egypt" or "records").
+  Mode is chosen with the "dark" class on <html>.
+  Example: <html data-palette="records" class="dark">
+*/
+
+/* Tailwind custom variant for dark mode */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Records: cream + coffee + copper + mustard + teal */
+[data-palette="records"] {
+  --page: #f4ecd8;
+  --surface: #fbf7ec;
+  --fg: #2b1d14;
+  --muted: #6b5a4b;
+  --line: #ddd0b3;
+  --primary: #b3452f;
+  --on-primary: #ffffff;
+  --secondary: #5e6b2f;
+  --danger: #e01912;
+  --success: #2f7d32;
+}
+
+[data-palette="records"].dark {
+  --page: #1e140e;
+  --surface: #2b1d14;
+  --fg: #f4ecd8;
+  --muted: #b8a892;
+  --line: #4a372a;
+  --primary: #e06b50;
+  --on-primary: #1e140e;
+  --secondary: #e0a82e;
+  --danger: #e01912;
+  --success: #2f7d32;
+}
+
+/* Exposes the variables as Tailwind utilities: bg-page, text-fg, border-line, ... */
+@theme inline {
+  --color-page: var(--page);
+  --color-surface: var(--surface);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-primary: var(--primary);
+  --color-on-primary: var(--on-primary);
+  --color-secondary: var(--secondary);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
+}
+
+@theme {
+  --font-display: "Fraunces", serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --animate-toast-in: toast-in 0.3s ease-out;
+  @keyframes toast-in {
+    from {
+      transform: translateY(-150%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+}
