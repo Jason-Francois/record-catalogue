@@ -1,9 +1,11 @@
 import FileUpload from "./FileUpload";
-
+import type Genre from "../types/genre";
+import MultiSelect from "./Multiselect";
+import { useState } from "react";
 export type RecordFormValues = {
   title: string;
   artist_name: string;
-  genre: string;
+  genre_ids: number[];
   release_year: number;
 };
 
@@ -11,6 +13,7 @@ type RecordFormProps = {
   initialValues?: Partial<RecordFormValues>;
   onSubmit: (values: RecordFormValues) => void | Promise<void>;
   submitLabel?: string;
+  genres: Genre[];
 };
 
 const CURRENT_YEAR = new Date().getFullYear();
@@ -19,18 +22,23 @@ export default function RecordForm({
   initialValues,
   onSubmit,
   submitLabel = "Add Record",
+  genres,
 }: RecordFormProps) {
+  const [selectedGenreIds, setSelectedGenreIds] = useState<string[]>(
+    (initialValues?.genre_ids ?? []).map(String),
+  );
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-
+    debugger;
     onSubmit({
       title: String(formData.get("title") ?? ""),
       artist_name: String(formData.get("artist_name") ?? ""),
-      genre: String(formData.get("genre") ?? ""),
+      genre_ids: selectedGenreIds.map(Number),
       release_year: Number(formData.get("release_year")),
     });
     event.currentTarget.reset();
+    setSelectedGenreIds([]);
   }
 
   return (
@@ -60,17 +68,18 @@ export default function RecordForm({
         className="rounded border border-line px-4 py-2"
         defaultValue={initialValues?.artist_name ?? ""}
       />
-      <label htmlFor="genre" className="flex flex-col gap-1 font-bold">
-        Genre
+      <label className="flex flex-col gap-1 font-bold">
+        Genres
+        <MultiSelect
+          items={genres.map((genre) => ({
+            id: String(genre.id),
+            label: genre.name,
+          }))}
+          buttonLabel="Select genres"
+          selectedIds={selectedGenreIds}
+          onChange={setSelectedGenreIds}
+        />
       </label>
-      <input
-        id="genre"
-        type="text"
-        placeholder="Genre"
-        name="genre"
-        className="rounded border border-line px-4 py-2"
-        defaultValue={initialValues?.genre ?? ""}
-      />
       <label htmlFor="release_year" className="flex flex-col gap-1 font-bold">
         Release Year
       </label>

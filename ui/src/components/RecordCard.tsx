@@ -2,6 +2,7 @@ import { Disc3 } from "lucide-react";
 import type RecordItem from "../types/record";
 import { useState } from "react";
 import ButtonLink from "./ButtonLink";
+import type Genre from "../types/genre";
 
 interface RecordCardProps {
   record: RecordItem;
@@ -37,9 +38,16 @@ export default function RecordCard({ record }: RecordCardProps) {
         <p className="text-sm text-muted">{record.artist_name}</p>
         <p className="text-muted">{record.release_year}</p>
         <div className="mt-3 flex items-center justify-between text-xs">
-          <span className="rounded-full bg-primary/10 px-2 py-1 text-primary">
-            {record.genre}
-          </span>
+          {record.genres.map((genre: Genre) => {
+            return (
+              <span
+                key={genre.id}
+                className="rounded-full bg-primary/10 px-2 py-1 text-primary"
+              >
+                {genre.name}
+              </span>
+            );
+          })}
           <ButtonLink
             variant="secondary"
             size="small"

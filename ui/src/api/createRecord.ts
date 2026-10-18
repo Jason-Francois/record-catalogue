@@ -5,7 +5,14 @@ import type { NewRecord } from "../types/record";
 
 // Rails' `params.expect(record: [...])` needs the fields nested under `record`
 export default function createRecord(data: NewRecord) {
-  return postJson<RecordItem>(`${API_URL}/records`, { record: data });
+  return postJson<RecordItem>(`${API_URL}/records`, {
+    record: {
+      title: data.title,
+      artist_name: data.artist_name,
+      release_year: data.release_year,
+    },
+    genre_ids: data.genre_ids.map(Number),
+  });
 }
 
 export function bulkCreateRecord(file: File) {

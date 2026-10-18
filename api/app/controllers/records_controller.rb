@@ -12,23 +12,56 @@ class RecordsController < ApplicationController
 
   # GET /records/:id
   def show
-    render json: @record
+    render json: @record.as_json(include: { genres: { only: :name } })
   end
 
   # POST /records
   def create
-    @record = Record.new(record_params)
+    # Extract genre IDs from the request parameters.
+    genre_ids = params[:genre_ids] || []
 
-    if @record.save
-      render json: @record, status: :created, location: @record
-    else
-      render json: @record.errors, status: :unprocessable_content
+    # If param exists, ensure that genre_ids is an array before proceeding.
+    unless genre_ids.is_a?(Array)
+      render json: { error: "genre_ids must be an array of IDs" },
+            status: :unprocessable_content
+      return
     end
+
+    ActiveRecord::Base.transaction do
+      # Find the existing genres selected in the React multiselect.
+      genres = Genre.where(id: genre_ids.uniq)
+
+      # Reject the request if any submitted genre ID doesn't exist.
+      if genres.size != genre_ids.uniq.size
+        render json: { error: "One or more genre IDs are invalid" },
+              status: :unprocessable_content
+        raise ActiveRecord::Rollback
+      end
+
+      # Create the record using only its own database attributes.
+      @record = Record.create!(record_params)
+
+      # Create the associations through the join table.
+      @record.genres = genres
+    end
+
+    # Don't render a successful response if the transaction rolled back.
+    return if performed?
+
+    render json: @record.as_json(
+      include: { genres: { only: [:id, :name] } }
+    ), status: :created, location: record_url(@record)
+
+  rescue ActiveRecord::RecordInvalid => e
+    render json: {
+      errors: e.record.errors.full_messages.presence || [e.message]
+    }, status: :unprocessable_content
   end
 
   # POST /records/bulk_create (takes a CSV file)
   def bulk_create
     file = params.require(:file)
+    
     # Check if file is a CSV
     unless File.extname(file.original_filename).casecmp?(".csv")
       render json: { error: "Invalid file format" }, status: :unprocessable_content
@@ -49,8 +82,20 @@ class RecordsController < ApplicationController
 
     csv = CSV.parse(csv_text, headers: true)
     Record.transaction do
-      csv.each { |row| Record.create!(row.to_h) }
-      # If any record creation fails, the transaction will be rolled back automatically
+      # Take genre out of the row hash before creating the record, since genres are handled separately.
+      csv.each do |row|
+        row_hash = row.to_h
+        genres = row_hash.delete("genres").split("|") # genres are a string separated by "|"
+        record = Record.create!(row_hash)
+        
+        # Handle the genre separately, e.g., by creating associations with the Genre model.
+        genres.each do |genre|
+          next if genre.blank?
+          canonical_genre = GenreCanonicalizer.canonicalize(genre)
+          genre_record = Genre.find_or_create_by!(name: canonical_genre)
+          RecordGenre.find_or_create_by!(record: record, genre: genre_record)
+        end
+      end
     end
 
     render json: {"success" => true}, status: :created
@@ -80,6 +125,6 @@ class RecordsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def record_params
-      params.require(:record).permit(:title, :artist_name, :genre, :release_year)
+      params.require(:record).permit(:title, :artist_name, :release_year)
     end
 end

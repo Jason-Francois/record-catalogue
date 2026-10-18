@@ -3,6 +3,8 @@ PAGE_SIZE = 12
 class Record < ApplicationRecord
   validates :title, :artist_name, presence: true
   after_commit :fetch_album_cover, on: [ :create, :update ]
+  has_many :record_genres, dependent: :destroy
+  has_many :genres, through: :record_genres, dependent: :destroy
   def self.search(params)
     records = all
     if params[:query].present?
@@ -10,7 +12,11 @@ class Record < ApplicationRecord
       records = records.where("title LIKE :query ESCAPE '\\' OR artist_name LIKE :query ESCAPE '\\'", query: term)
     end
 
-    records = records.where(genre: params[:genre]) if params[:genre].present?
+    if params[:genres].present?
+      records = records.joins(:genres)
+                      .where(genres: { id: params[:genres] })
+                      .distinct
+    end
     year_to = params[:year_to].to_i if params[:year_to].present?
     year_from = params[:year_from].to_i if params[:year_from].present?
 
@@ -29,13 +35,13 @@ class Record < ApplicationRecord
     # Handle pagination
     total_records = records.count
     total_pages = (total_records.to_f / PAGE_SIZE).ceil
+    
     # Order records by title, using id as a tiebreaker
     records = records.order(title: :asc, id: :asc)
     records = records.offset((page - 1) * PAGE_SIZE).limit(PAGE_SIZE)
-
-
+    records = records.includes(:genres)
     resp = {
-      records: records,
+      records: records.as_json(include: :genres),
       pagination: {
         total_records: total_records,
         total_pages: total_pages,

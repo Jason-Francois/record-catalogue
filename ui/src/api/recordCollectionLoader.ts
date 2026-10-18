@@ -1,12 +1,17 @@
 import type RecordItem from "../types/record";
+import type Genre from "../types/genre";
 import { getJson } from "./client";
 import { API_URL } from "../config";
 import type { LoaderFunctionArgs } from "react-router";
-const FILTER_KEYS = ["query", "genre", "year_from", "year_to", "page"];
+const FILTER_KEYS = ["query", "year_from", "year_to", "page"];
 
-export interface RecordCollectionLoaderResponse {
+interface RecordCollectionResponse {
   records: RecordItem[];
   pagination: Pagination;
+}
+
+export interface RecordCollectionLoaderResponse extends RecordCollectionResponse {
+  genres: Genre[];
 }
 
 export interface Pagination {
@@ -28,7 +33,20 @@ export default async function recordCollectionLoader({
     }
   }
 
-  return getJson<RecordCollectionLoaderResponse>(
-    `${API_URL}/records?${outgoingUrlParams.toString()}`,
-  );
+  for (const id of incomingUrlParams.getAll("genres[]")) {
+    outgoingUrlParams.append("genres[]", id);
+  }
+
+  // Fetch genres separately and include them in the response.
+  const [recordCollection, genres] = await Promise.all([
+    getJson<RecordCollectionResponse>(
+      `${API_URL}/records?${outgoingUrlParams.toString()}`,
+    ),
+    getJson<Genre[]>(`${API_URL}/genres`),
+  ]);
+
+  return {
+    ...recordCollection,
+    genres,
+  };
 }

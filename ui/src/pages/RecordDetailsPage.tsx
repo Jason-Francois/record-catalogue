@@ -5,12 +5,14 @@ import ConfirmDialog from "../components/ConfirmDialog";
 import deleteRecord from "../api/deleteRecord";
 import { Link, useLoaderData, useNavigate, useRevalidator } from "react-router";
 import { useState } from "react";
-import type RecordItem from "../types/record";
+import type { RecordDetailsLoaderData } from "../api/recordDetailsLoader";
 import updateRecord from "../api/updateRecord";
 import useToast from "../hooks/useToast";
 
 export default function RecordDetailsPage() {
-  const record = useLoaderData() as RecordItem;
+  const loaderData = useLoaderData() as RecordDetailsLoaderData;
+  const record = loaderData.record;
+  const genres = loaderData.genres;
   const [isEditing, setIsEditing] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
@@ -42,7 +44,6 @@ export default function RecordDetailsPage() {
       showToast("Failed to update record. Please try again.", "error");
     }
   }
-
   return (
     <section className="mx-auto w-full max-w-4xl py-10">
       <Link to="/records" className="text-sm text-muted hover:text-fg">
@@ -51,14 +52,26 @@ export default function RecordDetailsPage() {
 
       <div className="mt-6 grid gap-8 md:grid-cols-[320px_1fr]">
         <div className="relative aspect-square overflow-hidden rounded-lg bg-primary/10 text-primary/40 shadow">
-          <Disc3 className="absolute inset-0 m-auto size-24" />
           {record.image_url && !imageFailed && (
             <img
               src={record.image_url}
               alt={`${record.title} cover`}
-              onError={() => setImageFailed(true)}
+              onError={() => {
+                console.error("Failed to load cover:", record.image_url);
+                setImageFailed(true);
+              }}
+              onLoad={() => console.log("Cover loaded:", record.image_url)}
               className="absolute inset-0 h-full w-full object-cover"
             />
+          )}
+
+          {(!record.image_url || imageFailed) && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+              <Disc3 className="size-24" />
+              <p className="text-sm">
+                {imageFailed ? "Cover failed to load" : "No cover available"}
+              </p>
+            </div>
           )}
         </div>
 
@@ -68,6 +81,7 @@ export default function RecordDetailsPage() {
               initialValues={record}
               onSubmit={handleSubmit}
               submitLabel="Save"
+              genres={genres}
             />
             <div className="mt-4">
               <Button variant="secondary" onClick={() => setIsEditing(false)}>
@@ -84,7 +98,7 @@ export default function RecordDetailsPage() {
 
             <div className="mt-4 flex items-center gap-3 text-sm">
               <span className="rounded-full bg-primary/10 px-2 py-1 text-primary">
-                {record.genre}
+                {record.genres.map((genre) => genre.name).join(", ")}
               </span>
               <span className="text-muted">{record.release_year}</span>
             </div>

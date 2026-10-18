@@ -1,5 +1,6 @@
 import { createBrowserRouter } from "react-router";
 import recordCollectionLoader from "./api/recordCollectionLoader";
+import newRecordLoader from "./api/newRecordLoader";
 import AppLayout from "./layouts/AppLayout";
 import HomePage from "./pages/HomePage";
 import RecordCollectionPage from "./pages/RecordCollectionPage";
@@ -20,7 +21,11 @@ export const router = createBrowserRouter([
         loader: recordCollectionLoader,
         Component: RecordCollectionPage,
       },
-      { path: "records/new", Component: NewRecordPage },
+      {
+        path: "records/new",
+        loader: newRecordLoader,
+        Component: NewRecordPage,
+      },
       {
         path: "records/:id",
         loader: recordDetailsLoader,

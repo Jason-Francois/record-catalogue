@@ -7,11 +7,13 @@ export type ButtonProps = {
   isSecondary?: boolean;
   size?: "small" | "medium" | "large";
   variant?: "primary" | "secondary" | "danger";
+  fullSize?: boolean;
 };
 export default function Button({
   children,
   type = "button",
   size = "medium",
+  fullSize,
   onClick,
   variant = "primary",
 }: ButtonProps) {
@@ -19,7 +21,7 @@ export default function Button({
     <button
       type={type}
       onClick={onClick}
-      className={`${buttonStyles.base} ${buttonStyles.variants[variant ?? "primary"]} ${buttonStyles.sizes[size ?? "medium"]}`}
+      className={`${buttonStyles.base} ${buttonStyles.variants[variant ?? "primary"]} ${buttonStyles.sizes[size ?? "medium"]} ${fullSize ? "w-full" : ""}`}
     >
       {children}
     </button>

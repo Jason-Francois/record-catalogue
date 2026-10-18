@@ -3,13 +3,24 @@ import type { Pagination } from "../api/recordCollectionLoader";
 interface PaginationControlProps {
   pagination: Pagination;
 }
+
+const PAGINATION_WINDOW = 5; // Number of page buttons to show around the current page
+
 export default function PaginationControl({
   pagination,
 }: PaginationControlProps) {
   const [, setSearchParams] = useSearchParams();
+  const startPage = Math.max(
+    pagination.current_page - Math.floor(PAGINATION_WINDOW / 2),
+    1,
+  );
+  const endPage = Math.min(
+    startPage + PAGINATION_WINDOW - 1,
+    pagination.total_pages,
+  );
   const pageNumbers = Array.from(
-    { length: pagination.total_pages },
-    (_, i) => i + 1,
+    { length: endPage - startPage + 1 },
+    (_, i) => startPage + i,
   );
   const changePage = (pageNumber: number) => {
     setSearchParams(
