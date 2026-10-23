@@ -1,0 +1,81 @@
+.carousel {
+  perspective: 1000px;
+  position: relative;
+  height: 500px;
+}
+.carousel-item {
+  width: 300px;
+  height: 300px;
+  margin-top: 100px;
+  box-sizing: border-box;
+  position: absolute;
+  overflow: hidden;
+  transition: transform 400ms ease;
+  transform-style: preserve-3d;
+}
+
+.carousel-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.carousel a {
+  display: block;
+}
+
+.carousel-item--far-left {
+  /* position and rotation */
+  transform: translateX(-320px) rotateY(60deg);
+}
+.carousel-item--left {
+  /* position and rotation */
+  transform: translateX(-160px) rotateY(15deg);
+}
+.carousel-item--center {
+  /* position and rotation */
+  z-index: 30;
+  transform: translateX(0px) rotateY(0deg) translateZ(50px);
+}
+.carousel-item--right {
+  /* position and rotation */
+  transform: translateX(160px) rotateY(-15deg);
+}
+.carousel-item--far-right {
+  /* position and rotation */
+  transform: translateX(320px) rotateY(-60deg);
+}
+
+.carousel-item--far-left:hover {
+  transform: translateX(-320px) rotateY(60deg) translateY(-50px);
+}
+.carousel-item--left:hover {
+  transform: translateX(-160px) rotateY(15deg) translateY(-50px);
+}
+.carousel-item--center:hover {
+  transform: translateX(0px) rotateY(0deg) translateZ(50px) translateY(-50px);
+}
+.carousel-item--right:hover {
+  transform: translateX(160px) rotateY(-15deg) translateY(-50px);
+}
+.carousel-item--far-right:hover {
+  transform: translateX(320px) rotateY(-60deg) translateY(-50px);
+}
+
+.carousel-item--center {
+  z-index: 3;
+  opacity: 1;
+  box-shadow: 0 12px 28px rgb(45 30 15 / 18%);
+}
+
+.carousel-item--left,
+.carousel-item--right {
+  z-index: 2;
+  opacity: 0.9;
+}
+
+.carousel-item--far-left,
+.carousel-item--far-right {
+  z-index: 1;
+  opacity: 0.75;
+}

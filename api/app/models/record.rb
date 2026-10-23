@@ -7,14 +7,14 @@ class Record < ApplicationRecord
   has_many :genres, through: :record_genres, dependent: :destroy
   def self.search(params)
     records = all
+    genres = params[:genres].to_s.split(",").filter(&:present?) if params[:genres].present?
     if params[:query].present?
       term = "%#{sanitize_sql_like(params[:query])}%"
       records = records.where("title LIKE :query ESCAPE '\\' OR artist_name LIKE :query ESCAPE '\\'", query: term)
     end
-
-    if params[:genres].present?
+    if genres.present?
       records = records.joins(:genres)
-                      .where(genres: { id: params[:genres] })
+                      .where(genres: { id: genres })
                       .distinct
     end
     year_to = params[:year_to].to_i if params[:year_to].present?
@@ -38,7 +38,11 @@ class Record < ApplicationRecord
     
     # Order records by title, using id as a tiebreaker
     records = records.order(title: :asc, id: :asc)
-    records = records.offset((page - 1) * PAGE_SIZE).limit(PAGE_SIZE)
+
+    # Apply pagination only if the view is not "carousel"
+    if params[:view] != "carousel"
+      records = records.offset((page - 1) * PAGE_SIZE).limit(PAGE_SIZE)
+    end
     records = records.includes(:genres)
     resp = {
       records: records.as_json(include: :genres),

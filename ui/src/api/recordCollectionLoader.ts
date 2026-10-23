@@ -3,7 +3,7 @@ import type Genre from "../types/genre";
 import { getJson } from "./client";
 import { API_URL } from "../config";
 import type { LoaderFunctionArgs } from "react-router";
-const FILTER_KEYS = ["query", "year_from", "year_to", "page"];
+const FILTER_KEYS = ["query", "year_from", "year_to", "page", "view", "genres"];
 
 interface RecordCollectionResponse {
   records: RecordItem[];
@@ -33,9 +33,7 @@ export default async function recordCollectionLoader({
     }
   }
 
-  for (const id of incomingUrlParams.getAll("genres[]")) {
-    outgoingUrlParams.append("genres[]", id);
-  }
+  // Copy all "genres[]" parameters from incoming URL to outgoing URL.
 
   // Fetch genres separately and include them in the response.
   const [recordCollection, genres] = await Promise.all([

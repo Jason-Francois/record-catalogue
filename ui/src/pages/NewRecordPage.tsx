@@ -18,9 +18,9 @@ export default function NewRecordPage() {
   }
   return (
     <>
-      <div className="flex-1 flex flex-col items-center justify-center mt-8">
+      <div className="flex-1 flex flex-col items-center justify-center my-8">
         <h1 className="font-display text-5xl font-bold tracking-tight mb-4">
-          Add New Record
+          Add Records
         </h1>
         <p className="text-lg text-muted">
           Fill out the form below to add a new record to your collection.

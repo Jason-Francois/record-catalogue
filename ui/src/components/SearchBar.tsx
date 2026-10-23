@@ -16,7 +16,7 @@ export default function SearchBar({ genres }: SearchBarProps) {
   const formRef = useRef<HTMLFormElement>(null);
 
   const [selectedGenreIds, setSelectedGenreIds] = useState<string[]>(
-    params.getAll("genres[]"),
+    params.get("genres")?.split(",").filter(Boolean) ?? [],
   );
 
   function handleGenreChange(nextIds: string[]) {
@@ -27,9 +27,9 @@ export default function SearchBar({ genres }: SearchBarProps) {
 
     // Keep the current search text and year filters.
     const formData = new FormData(form);
-    formData.delete("genres[]");
+    formData.delete("genres");
 
-    nextIds.forEach((id) => formData.append("genres[]", id));
+    nextIds.forEach((id) => formData.append("genres", id));
 
     // Submit the form with the updated genre selection.
     submit(formData, { method: "get" });
@@ -63,6 +63,7 @@ export default function SearchBar({ genres }: SearchBarProps) {
       }}
     >
       <div className="relative w-full">
+        <input type="hidden" name="view" value={params.get("view") ?? ""} />
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted" />
         <input
           className="py-3 pl-12 pr-4 w-full bg-surface border border-line text-fg placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary shadow-sm rounded-lg"

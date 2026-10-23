@@ -8,12 +8,14 @@ export type ButtonProps = {
   size?: "small" | "medium" | "large";
   variant?: "primary" | "secondary" | "danger";
   fullSize?: boolean;
+  className?: string;
 };
 export default function Button({
   children,
   type = "button",
   size = "medium",
-  fullSize,
+  fullSize = false,
+  className = "",
   onClick,
   variant = "primary",
 }: ButtonProps) {
@@ -21,7 +23,7 @@ export default function Button({
     <button
       type={type}
       onClick={onClick}
-      className={`${buttonStyles.base} ${buttonStyles.variants[variant ?? "primary"]} ${buttonStyles.sizes[size ?? "medium"]} ${fullSize ? "w-full" : ""}`}
+      className={`${buttonStyles.base} ${buttonStyles.variants[variant ?? "primary"]} ${buttonStyles.sizes[size ?? "medium"]} ${fullSize ? "w-full" : ""} self-start ${className ?? ""}`}
     >
       {children}
     </button>
